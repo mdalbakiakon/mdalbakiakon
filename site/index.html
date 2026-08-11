@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Md. Al Baki Akon — Terminal</title>
+
+  <style>
+    @font-face {
+      font-family: "White Rabbit";
+      src: url("./assets/wr.woff2") format("woff2");
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      background: #0d0e12;
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    /*
+     * Keep the terminal at its natural CLI size.
+     *
+     * The SVG is ~794px wide, so don't stretch it
+     * across a 1200-1600px desktop screen.
+     */
+    #terminal {
+      width: 100%;
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    #terminal svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .error {
+      color: #ff5f56;
+      font-family: monospace;
+      padding: 20px;
+    }
+
+    /*
+     * On smaller screens the terminal is allowed
+     * to shrink naturally.
+     */
+    @media (max-width: 794px) {
+      #terminal {
+        width: 100%;
+        max-width: none;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div id="terminal"></div>
+
+  <script>
+    async function loadTerminal() {
+      const container = document.getElementById("terminal");
+
+      try {
+        const response = await fetch("./terminal.svg", {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            `Failed to load terminal.svg (${response.status})`
+          );
+        }
+
+        let svgText = await response.text();
+
+        /*
+         * Fix profile image path.
+         */
+        svgText = svgText.replace(
+          /\.\.\/assets\/dp\.png/g,
+          "./assets/dp.png"
+        );
+
+        /*
+         * Parse SVG.
+         */
+        const parser = new DOMParser();
+
+        const svgDocument = parser.parseFromString(
+          svgText,
+          "image/svg+xml"
+        );
+
+        const svg = svgDocument.documentElement;
+
+        if (!svg || svg.tagName.toLowerCase() !== "svg") {
+          throw new Error("Invalid SVG document");
+        }
+
+        /*
+         * Keep the SVG's original coordinate system.
+         * Do NOT force it to 100% width.
+         */
+        svg.style.display = "block";
+        svg.style.width = "100%";
+        svg.style.height = "auto";
+
+        /*
+         * Import SVG into the page.
+         */
+        const importedSvg = document.importNode(svg, true);
+
+        container.replaceChildren(importedSvg);
+
+      } catch (error) {
+        console.error("Terminal loading error:", error);
+
+        container.innerHTML = `
+          <div class="error">
+            Failed to load terminal.
+          </div>
+        `;
+      }
+    }
+
+    loadTerminal();
+  </script>
+
+</body>
+</html>

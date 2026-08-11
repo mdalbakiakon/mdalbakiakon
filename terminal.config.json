@@ -1,5 +1,5 @@
 {
-  "_readme": "Edit this file to change what the terminal shows and how it looks. Save + push, and the GitHub Action will regenerate assets/terminal.svg automatically. See README.md for a full field-by-field guide.",
+  "_readme": "Edit this file to change what the terminal shows and how it looks. Save + push, and the GitHub Action will regenerate assets/terminal.svg automatically.",
   "window_title": "mdalbakiakon@github:~",
   "width": 760,
   "badge_pad_x": 14,
@@ -27,8 +27,9 @@
       "AWARD": "#e05561"
     }
   },
-  "font_family": "'JetBrains Mono', 'Fira Code', 'White Rabbit', ui-monospace, monospace",
-  "font_size": 14,
+  "font_file": "site/assets/wr.woff2",
+  "font_family": "'White Rabbit', 'JetBrains Mono', 'Fira Code', ui-monospace, monospace",
+  "font_size": 8,
   "timing": {
     "typing_speed_ms": 150,
     "enter_pause_ms": 1500,
@@ -57,7 +58,7 @@
         {
           "type": "badge",
           "label": "DONE",
-          "text": "Environment ready  \u00b7  42ms",
+          "text": "Environment ready  ·  42ms",
           "text_color": "#9acd32"
         },
         {
@@ -74,9 +75,21 @@
       "prompt": "git identify --verbose",
       "output": [
         {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "text",
+          "text": "Identifying profile holder..."
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
           "type": "badge",
           "label": "INFO",
-          "text": "Identification completed \u00b7  65ms",
+          "text": "Identification completed · 65ms",
           "text_color": "#00fff0"
         },
         {
@@ -85,7 +98,7 @@
         },
         {
           "type": "text",
-          "text": "generating 8bit pixel profile picture..."
+          "text": "Generating 8bit pixel profile picture..."
         },
         {
           "type": "text",
@@ -93,7 +106,7 @@
         },
         {
           "type": "image",
-          "src": "../assets/dp.png",
+          "src": "assets/dp.png",
           "width": 150,
           "height": 150,
           "circle": true
@@ -120,20 +133,23 @@
         {
           "type": "line",
           "timestamp": "portfolio",
-          "text": "https://mdalbakiakon.vercel.app/",
-          "link": "https://mdalbakiakon.vercel.app/"
+          "text": "mdalbakiakon.vercel.app",
+          "link": "https://mdalbakiakon.vercel.app/",
+          "link_text": "mdalbakiakon.vercel.app"
         },
         {
           "type": "line",
           "timestamp": "email",
           "text": "mdalbakiakon.dev@gmail.com",
-          "link": "mailto:mdalbakiakon.dev@gmail.com"
+          "link": "mailto:mdalbakiakon.dev@gmail.com",
+          "link_text": "mdalbakiakon.dev@gmail.com"
         },
         {
           "type": "line",
           "timestamp": "linkedin",
           "text": "linkedin.com/in/md-al-baki-akon",
-          "link": "https://www.linkedin.com/in/md-al-baki-akon-352989362/"
+          "link": "https://www.linkedin.com/in/md-al-baki-akon-352989362/",
+          "link_text": "linkedin.com/in/md-al-baki-akon"
         },
         {
           "type": "text",
@@ -325,7 +341,7 @@
         {
           "type": "badge",
           "label": "STATS",
-          "text": "200 OK  \u00b7  synced",
+          "text": "200 OK  ·  synced",
           "text_color": "#f78056"
         },
         {
@@ -356,7 +372,7 @@
         },
         {
           "type": "text",
-          "text": "  \"linkedin\": \"linkedin.com/in/md-al-baki-akon\" ",
+          "text": "  \"linkedin\": \"linkedin.com/in/md-al-baki-akon\"",
           "link": "https://www.linkedin.com/in/md-al-baki-akon-352989362/",
           "link_text": "linkedin.com/in/md-al-baki-akon"
         },

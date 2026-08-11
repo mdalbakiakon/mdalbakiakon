@@ -1,9 +1,7 @@
-#!/usr/bin/env python3
 """
 Generates assets/terminal.svg from terminal.config.json.
 
-No third-party dependencies (stdlib only) so it can run in a bare
-GitHub Actions runner with no pip install step.
+No third-party dependencies.
 
 Usage:
     python3 scripts/generate_terminal_svg.py [config_path] [output_path]
@@ -13,29 +11,70 @@ Defaults:
     output_path = assets/terminal.svg
 """
 
-import json
-import sys
+import base64
 import html
+import json
 import os
+import sys
 
+
+# ============================================================
+# CONSTANTS
+# ============================================================
 
 CHAR_WIDTH_RATIO = 0.6
+
 TOP_PAD = 56
 HEADER_HEIGHT = 40
 BOTTOM_PAD = 40
+
 CURSOR_WIDTH_RATIO = 0.55
 CURSOR_HEIGHT_RATIO = 1.15
+
 GUTTER_SIDE_PAD = 10
 
 
-def esc(s):
-    return html.escape(str(s), quote=True)
+# ============================================================
+# HELPERS
+# ============================================================
+
+def esc(value):
+    return html.escape(str(value), quote=True)
 
 
 def load_config(path):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
+
+def load_font_base64(font_path):
+    """
+    Loads the custom WOFF2 font and returns base64 data.
+
+    This embeds the font directly inside terminal.svg,
+    so the SVG does not depend on the browser finding the
+    font file separately.
+    """
+
+    if not font_path:
+        return None
+
+    if not os.path.exists(font_path):
+        print(
+            f"Warning: font file not found: {font_path}",
+            file=sys.stderr,
+        )
+        return None
+
+    with open(font_path, "rb") as f:
+        data = f.read()
+
+    return base64.b64encode(data).decode("ascii")
+
+
+# ============================================================
+# CURSOR
+# ============================================================
 
 class Cursor:
     """Collects cursor movement keyframes."""
@@ -52,13 +91,7 @@ class Cursor:
             )
         )
 
-    def to_svg(
-        self,
-        color,
-        width,
-        height,
-        radius=1,
-    ):
+    def to_svg(self, color, width, height, radius=1):
         if not self.moves:
             return ""
 
@@ -108,25 +141,22 @@ class Cursor:
         )
 
 
+# ============================================================
+# ROW COUNT
+# ============================================================
+
 def count_rows(
     commands,
     command_gap_lines,
     show_idle_cursor,
 ):
-    """
-    Pre-pass used to calculate the required number of digits
-    for the line-number gutter.
-
-    Blank command-gap rows are included in the geometry.
-    """
-
     rows = 0
 
     for cmd in commands:
-        # Prompt row
+        # Prompt
         rows += 1
 
-        # Output rows
+        # Output
         rows += len(
             cmd.get(
                 "output",
@@ -134,7 +164,7 @@ def count_rows(
             )
         )
 
-        # Blank gap rows
+        # Blank gap
         rows += command_gap_lines
 
     if show_idle_cursor:
@@ -143,15 +173,16 @@ def count_rows(
     return rows
 
 
-def build_svg(cfg):
-    # =========================================================
-    # COLORS
-    # =========================================================
+# ============================================================
+# SVG BUILDER
+# ============================================================
 
-    colors = cfg.get(
-        "colors",
-        {},
-    )
+def build_svg(cfg, font_data=None):
+    # ========================================================
+    # COLORS
+    # ========================================================
+
+    colors = cfg.get("colors", {})
 
     bg = colors.get(
         "background",
@@ -244,13 +275,13 @@ def build_svg(cfg):
         "#F72585",
     )
 
-    # =========================================================
+    # ========================================================
     # FONT
-    # =========================================================
+    # ========================================================
 
     font_family = cfg.get(
         "font_family",
-        "'JetBrains Mono','Fira Code','White Rabbit',ui-monospace,monospace",
+        "'JetBrains Mono', 'Fira Code', 'White Rabbit', ui-monospace, monospace",
     )
 
     font_size = cfg.get(
@@ -259,13 +290,12 @@ def build_svg(cfg):
     )
 
     char_width = (
-        font_size
-        * CHAR_WIDTH_RATIO
+        font_size * CHAR_WIDTH_RATIO
     )
 
-    # =========================================================
+    # ========================================================
     # LAYOUT
-    # =========================================================
+    # ========================================================
 
     line_height = cfg.get(
         "line_height",
@@ -292,9 +322,9 @@ def build_svg(cfg):
         20,
     )
 
-    # =========================================================
+    # ========================================================
     # TIMING
-    # =========================================================
+    # ========================================================
 
     timing = cfg.get(
         "timing",
@@ -333,17 +363,6 @@ def build_svg(cfg):
         / 1000.0
     )
 
-    # ---------------------------------------------------------
-    # IMAGE DELAY
-    #
-    # Default: 3.5 seconds
-    #
-    # Change in terminal.config.json:
-    #
-    # "image_delay_ms": 3500
-    #
-    # ---------------------------------------------------------
-
     image_delay = (
         timing.get(
             "image_delay_ms",
@@ -352,9 +371,9 @@ def build_svg(cfg):
         / 1000.0
     )
 
-    # =========================================================
+    # ========================================================
     # GENERAL CONFIG
-    # =========================================================
+    # ========================================================
 
     window_title = cfg.get(
         "window_title",
@@ -373,12 +392,12 @@ def build_svg(cfg):
 
     prompt_prefix = cfg.get(
         "prompt_prefix",
-        "➜  ~ ",
+        "➜ ~ ",
     )
 
-    # =========================================================
-    # GUTTER GEOMETRY
-    # =========================================================
+    # ========================================================
+    # GUTTER
+    # ========================================================
 
     total_rows = count_rows(
         commands,
@@ -396,9 +415,7 @@ def build_svg(cfg):
 
     digits = (
         len(
-            str(
-                max_line_number
-            )
+            str(max_line_number)
         )
         if total_rows > 0
         else 1
@@ -444,21 +461,39 @@ def build_svg(cfg):
             32,
         )
 
+    # ========================================================
+    # DESIGN WIDTH
+    #
+    # IMPORTANT:
+    #
+    # This is the INTERNAL SVG coordinate width.
+    #
+    # The final SVG is rendered with:
+    #
+    #     width="100%"
+    #
+    # while preserving:
+    #
+    #     viewBox="0 0 DESIGN_WIDTH ..."
+    #
+    # This makes the entire terminal scale proportionally.
+    # ========================================================
+
     configured_width = cfg.get(
         "width",
         760,
     )
 
-    width = (
+    design_width = (
         configured_width
         + gutter_width
         if show_line_numbers
         else configured_width
     )
 
-    # =========================================================
+    # ========================================================
     # TEXT / LINK HELPER
-    # =========================================================
+    # ========================================================
 
     def make_content(
         text,
@@ -467,13 +502,6 @@ def build_svg(cfg):
         link_match=None,
         hover_color=None,
     ):
-        """
-        Render a line as SVG tspans.
-
-        If href is supplied, the matching text becomes
-        a clickable link.
-        """
-
         if not href:
             return (
                 f'<tspan fill="{base_color}">'
@@ -502,6 +530,7 @@ def build_svg(cfg):
             pre = ""
             mid = text
             post = ""
+
         else:
             pre = text[:idx]
             mid = match
@@ -541,9 +570,9 @@ def build_svg(cfg):
 
         return "".join(parts)
 
-    # =========================================================
-    # SVG BODY
-    # =========================================================
+    # ========================================================
+    # BODY
+    # ========================================================
 
     body_parts = []
 
@@ -551,28 +580,18 @@ def build_svg(cfg):
 
     line_number = line_number_start
 
-    # =========================================================
-    # GUTTER DRAWER
-    # =========================================================
+    # ========================================================
+    # GUTTER
+    # ========================================================
 
     def draw_gutter(
         baseline_y,
         reveal_time=None,
     ):
-        """
-        Draw a line number.
-
-        IMPORTANT:
-        The line number starts at opacity=0 and only becomes
-        visible at reveal_time.
-
-        This prevents all gutter numbers from appearing
-        immediately when the SVG loads.
-        """
-
         nonlocal line_number
 
         if show_line_numbers:
+
             if reveal_time is None:
                 reveal_time = 0
 
@@ -585,6 +604,7 @@ def build_svg(cfg):
                 f'font-size="{gutter_font_size}" '
                 f'fill="{line_number_color}" '
                 f'opacity="0">'
+
                 f'{line_number}'
 
                 f'<animate '
@@ -599,20 +619,20 @@ def build_svg(cfg):
 
         line_number += 1
 
-    # =========================================================
+    # ========================================================
     # INITIAL TIMELINE
-    # =========================================================
+    # ========================================================
 
     y = TOP_PAD
 
-    # Small initial delay before the first keystroke.
     t = 0.3
 
-    # =========================================================
+    # ========================================================
     # COMMANDS
-    # =========================================================
+    # ========================================================
 
     for cmd in commands:
+
         cmd_text = str(
             cmd.get(
                 "prompt",
@@ -625,9 +645,9 @@ def build_svg(cfg):
             [],
         )
 
-        # =====================================================
+        # ====================================================
         # PROMPT
-        # =====================================================
+        # ====================================================
 
         prompt_baseline_y = y
 
@@ -637,8 +657,6 @@ def build_svg(cfg):
             + 3
         )
 
-        # The line number appears at exactly the same time
-        # as the prompt.
         draw_gutter(
             prompt_baseline_y,
             t,
@@ -685,13 +703,14 @@ def build_svg(cfg):
             row_top_y,
         )
 
-        # =====================================================
+        # ====================================================
         # TYPE COMMAND
-        # =====================================================
+        # ====================================================
 
         for i, ch in enumerate(
             cmd_text
         ):
+
             char_time = (
                 command_start_time
                 + i * char_dur
@@ -748,11 +767,12 @@ def build_svg(cfg):
 
         y += line_height
 
-        # =====================================================
+        # ====================================================
         # OUTPUT
-        # =====================================================
+        # ====================================================
 
         for line in output_lines:
+
             ltype = line.get(
                 "type",
                 "text",
@@ -768,8 +788,6 @@ def build_svg(cfg):
                 + 3
             )
 
-            # The gutter number is now synchronized with
-            # the output line.
             draw_gutter(
                 line_y,
                 line_time,
@@ -780,6 +798,7 @@ def build_svg(cfg):
             # =================================================
 
             if ltype == "badge":
+
                 label = str(
                     line.get(
                         "label",
@@ -909,12 +928,6 @@ def build_svg(cfg):
             # =================================================
 
             elif ltype == "image":
-                """
-                Image appears after image_delay.
-
-                Default:
-                    3500ms = 3.5 seconds
-                """
 
                 image_line_time = (
                     t
@@ -947,9 +960,6 @@ def build_svg(cfg):
                     ),
                 )
 
-                # Fixed:
-                # CONTENT_X was undefined.
-                # left_pad is the correct X position.
                 img_x = left_pad
 
                 img_y = (
@@ -995,7 +1005,6 @@ def build_svg(cfg):
                     f'stroke="{border}" '
                     f'stroke-width="1"/>'
 
-                    # Image reveal happens after the delay.
                     f'<animate '
                     f'attributeName="opacity" '
                     f'to="1" '
@@ -1006,8 +1015,6 @@ def build_svg(cfg):
                     f'</g>'
                 )
 
-                # Move timeline forward so subsequent content
-                # starts AFTER the image has appeared.
                 t = (
                     image_line_time
                     + line_delay
@@ -1025,6 +1032,7 @@ def build_svg(cfg):
             # =================================================
 
             elif ltype == "path":
+
                 text = str(
                     line.get(
                         "text",
@@ -1051,6 +1059,7 @@ def build_svg(cfg):
             # =================================================
 
             elif ltype == "line":
+
                 ts = line.get(
                     "timestamp"
                 )
@@ -1094,6 +1103,7 @@ def build_svg(cfg):
                 )
 
                 if ts:
+
                     content = (
                         f'<tspan '
                         f'fill="{timestamp_color}">'
@@ -1107,16 +1117,16 @@ def build_svg(cfg):
 
                         f'{text_content}'
                     )
+
                 else:
-                    content = (
-                        text_content
-                    )
+                    content = text_content
 
             # =================================================
             # PLAIN TEXT
             # =================================================
 
             else:
+
                 text = str(
                     line.get(
                         "text",
@@ -1156,7 +1166,7 @@ def build_svg(cfg):
                 )
 
             # =================================================
-            # RENDER NORMAL OUTPUT LINE
+            # NORMAL OUTPUT LINE
             # =================================================
 
             body_parts.append(
@@ -1183,26 +1193,24 @@ def build_svg(cfg):
 
             y += line_height
 
-        # =====================================================
+        # ====================================================
         # COMMAND GAP
-        # =====================================================
+        # ====================================================
 
         t += command_gap
 
-        # IMPORTANT:
-        # Blank rows consume vertical space and line numbers,
-        # but no number is rendered for them.
         for _ in range(
             command_gap_lines
         ):
             line_number += 1
             y += line_height
 
-    # =========================================================
+    # ========================================================
     # IDLE PROMPT
-    # =========================================================
+    # ========================================================
 
     if show_idle_cursor:
+
         idle_baseline_y = y
 
         idle_row_top = (
@@ -1211,7 +1219,6 @@ def build_svg(cfg):
             + 3
         )
 
-        # Idle line number appears with idle prompt.
         draw_gutter(
             idle_baseline_y,
             t,
@@ -1252,9 +1259,9 @@ def build_svg(cfg):
 
         y += line_height
 
-    # =========================================================
-    # SVG DIMENSIONS
-    # =========================================================
+    # ========================================================
+    # FINAL DIMENSIONS
+    # ========================================================
 
     total_height = int(
         y + BOTTOM_PAD
@@ -1270,9 +1277,9 @@ def build_svg(cfg):
         * CURSOR_HEIGHT_RATIO
     )
 
-    # =========================================================
+    # ========================================================
     # HEADER DOTS
-    # =========================================================
+    # ========================================================
 
     dots = (
         f'<circle '
@@ -1294,13 +1301,13 @@ def build_svg(cfg):
         f'fill="{dot_green}"/>'
     )
 
-    # =========================================================
+    # ========================================================
     # WINDOW TITLE
-    # =========================================================
+    # ========================================================
 
     title_text = (
         f'<text '
-        f'x="{width / 2:.1f}" '
+        f'x="{design_width / 2:.1f}" '
         f'y="{HEADER_HEIGHT / 2 + 4:.1f}" '
         f'text-anchor="middle" '
         f'font-family="{esc(font_family)}" '
@@ -1312,13 +1319,14 @@ def build_svg(cfg):
         f'</text>'
     )
 
-    # =========================================================
+    # ========================================================
     # GUTTER DIVIDER
-    # =========================================================
+    # ========================================================
 
     gutter_divider_svg = ""
 
     if show_line_numbers:
+
         gutter_divider_svg = (
             f'<line '
             f'x1="{gutter_width:.2f}" '
@@ -1329,14 +1337,53 @@ def build_svg(cfg):
             f'stroke-width="1"/>'
         )
 
-    # =========================================================
+    # ========================================================
+    # EMBED CUSTOM FONT
+    # ========================================================
+
+    font_face_css = ""
+
+    if font_data:
+
+        font_face_css = f"""
+        @font-face {{
+            font-family: "WhiteRabbitCustom";
+            src: url(data:font/woff2;base64,{font_data}) format("woff2");
+            font-weight: 100 900;
+            font-style: normal;
+            font-display: block;
+        }}
+        """
+
+        # Replace the configured font family with the embedded
+        # custom font as the first choice.
+        svg_font_family = (
+            '"WhiteRabbitCustom", '
+            + font_family
+        )
+
+    else:
+        svg_font_family = font_family
+
+    # ========================================================
     # FINAL SVG
-    # =========================================================
+    #
+    # IMPORTANT:
+    #
+    # width="100%"     -> fills available browser width
+    #
+    # viewBox          -> preserves internal coordinates
+    #
+    # preserveAspectRatio
+    #                   -> scales terminal proportionally
+    #
+    # This is the part that fixes your current problem.
+    # ========================================================
 
     svg = f"""<svg
-width="{width}"
-height="{total_height}"
-viewBox="0 0 {width} {total_height}"
+width="100%"
+viewBox="0 0 {design_width} {total_height}"
+preserveAspectRatio="xMidYMin meet"
 xmlns="http://www.w3.org/2000/svg"
 xmlns:xlink="http://www.w3.org/1999/xlink">
 
@@ -1346,12 +1393,18 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
         <rect
             x="0"
             y="0"
-            width="{width}"
+            width="{design_width}"
             height="{total_height}"
             rx="10"/>
     </clipPath>
 
     <style>
+        {font_face_css}
+
+        .terminal-text {{
+            font-family: {esc(svg_font_family)};
+        }}
+
         .term-link {{
             cursor: pointer;
             text-decoration: underline;
@@ -1373,21 +1426,21 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
     <rect
         x="0"
         y="0"
-        width="{width}"
+        width="{design_width}"
         height="{total_height}"
         fill="{bg}"/>
 
     <rect
         x="0"
         y="0"
-        width="{width}"
+        width="{design_width}"
         height="{HEADER_HEIGHT}"
         fill="{header_bg}"/>
 
     <rect
         x="0.5"
         y="0.5"
-        width="{width - 1}"
+        width="{design_width - 1}"
         height="{total_height - 1}"
         rx="10"
         fill="none"
@@ -1415,7 +1468,12 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
     return svg
 
 
+# ============================================================
+# MAIN
+# ============================================================
+
 def main():
+
     config_path = (
         sys.argv[1]
         if len(sys.argv) > 1
@@ -1431,17 +1489,63 @@ def main():
         )
     )
 
+    # --------------------------------------------------------
+    # Load config
+    # --------------------------------------------------------
+
     cfg = load_config(
         config_path
     )
 
-    svg = build_svg(cfg)
+    # --------------------------------------------------------
+    # Find custom font
+    #
+    # Your current file:
+    #
+    # assets/wr.woff2
+    #
+    # This works whether the generator is executed from
+    # the repository root.
+    # --------------------------------------------------------
+
+    configured_font_path = cfg.get(
+        "font_file",
+        "assets/wr.woff2",
+    )
+
+    if not os.path.isabs(
+        configured_font_path
+    ):
+        configured_font_path = os.path.abspath(
+            configured_font_path
+        )
+
+    font_data = load_font_base64(
+        configured_font_path
+    )
+
+    # --------------------------------------------------------
+    # Generate SVG
+    # --------------------------------------------------------
+
+    svg = build_svg(
+        cfg,
+        font_data,
+    )
+
+    # --------------------------------------------------------
+    # Create output directory
+    # --------------------------------------------------------
 
     os.makedirs(
         os.path.dirname(output_path)
         or ".",
         exist_ok=True,
     )
+
+    # --------------------------------------------------------
+    # Write SVG
+    # --------------------------------------------------------
 
     with open(
         output_path,
@@ -1454,6 +1558,16 @@ def main():
         f"Wrote {output_path} "
         f"({len(svg)} bytes)"
     )
+
+    if font_data:
+        print(
+            f"Embedded custom font: "
+            f"{configured_font_path}"
+        )
+    else:
+        print(
+            "Custom font was NOT embedded."
+        )
 
 
 if __name__ == "__main__":
