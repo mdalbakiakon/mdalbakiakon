@@ -2,11 +2,8 @@
   "_readme": "Edit this file to change what the terminal shows and how it looks. Save + push, and the GitHub Action will regenerate assets/terminal.svg automatically.",
 
   "window_title": "mdalbakiakon@github:~",
-
   "width": 760,
-
   "prompt_prefix": "mdalbakiakon@github:~$ ",
-
   "font_file": "assets/wr.woff2",
 
   "colors": {
@@ -38,17 +35,12 @@
   },
 
   "font_family": "'JetBrains Mono', 'Fira Code', 'White Rabbit', ui-monospace, monospace",
-
   "font_size": 14,
-
   "line_height": 20,
-
   "content_left_pad": 20,
 
   "command_gap_lines": 2,
-
   "show_line_numbers": true,
-
   "line_number_start": 0,
 
   "timing": {
@@ -62,7 +54,7 @@
 
   "commands": [
     {
-      "prompt": "git init --profile",
+      "prompt": "  git init --profile",
 
       "output": [
         {
@@ -71,34 +63,29 @@
           "text": "Initializing github profile ...",
           "color": "#8a8a8a"
         },
-
         {
           "type": "text",
           "timestamp": "2/4",
           "text": "Fetching data...",
           "color": "#8a8a8a"
         },
-
         {
           "type": "text",
           "timestamp": "3/4",
           "text": "Preparing developer environment...",
           "color": "#8a8a8a"
         },
-
         {
           "type": "text",
           "timestamp": "4/4",
           "text": "Profile ready · 42ms",
           "color": "#9acd32"
         },
-
         {
           "type": "text",
           "text": "",
           "color": "#9acd32"
         },
-
         {
           "type": "text",
           "text": "Oh! Hi there. Welcome to Baki's github profile.",
@@ -108,7 +95,7 @@
     },
 
     {
-      "prompt": "node",
+      "prompt": "  node",
 
       "output": [
         {
@@ -116,55 +103,48 @@
           "text": "Welcome to Node.js v24.13.0.",
           "color": "#8a8a8a"
         },
-
         {
           "type": "text",
           "text": "Type \".help\" for more information.",
           "color": "#8a8a8a"
         },
-
         {
           "type": "input",
-          "prompt": "> ",
-          "text": "const response = await fetch(\"https://api.github.com/users/mdalbakiakon\")",
+          "prompt": ">",
+          "text": " const response = await fetch(\"https://api.github.com/users/mdalbakiakon\")",
           "prompt_color": "#f5c517",
           "color": "#c9c9c9"
         },
-
         {
           "type": "text",
           "text": "undefined",
           "color": "#514f56"
         },
-
         {
           "type": "input",
-          "prompt": "> ",
-          "text": "const data = await response.json()",
+          "prompt": ">",
+          "text": " const data = await response.json()",
           "prompt_color": "#f5c517",
           "color": "#c9c9c9"
         },
-
         {
           "type": "text",
           "text": "undefined",
           "color": "#514f56"
         },
-
         {
           "type": "input",
-          "prompt": "> ",
-          "text": "console.log(JSON.stringify(data, null, 2))",
+          "prompt": ">",
+          "text": " console.log(JSON.stringify(data, null, 2))",
           "prompt_color": "#f5c517",
           "color": "#c9c9c9"
         },
 
         {
           "type": "json_bracket",
-          "text": "{",
+          "text": "}",
           "color": "#fa2b55"
         },
-
         {
           "type": "json",
           "key": "\"name\"",
@@ -173,7 +153,6 @@
           "separator_color": "#8a8a8a",
           "key_color": "#cdabff"
         },
-
         {
           "type": "json",
           "key": "\"role\"",
@@ -182,7 +161,6 @@
           "separator_color": "#8a8a8a",
           "key_color": "#cdabff"
         },
-
         {
           "type": "json",
           "key": "\"location\"",
@@ -191,7 +169,6 @@
           "separator_color": "#8a8a8a",
           "key_color": "#cdabff"
         },
-
         {
           "type": "json",
           "key": "\"frontend\"",
@@ -200,7 +177,6 @@
           "separator_color": "#8a8a8a",
           "key_color": "#cdabff"
         },
-
         {
           "type": "json",
           "key": "\"backend\"",
@@ -209,7 +185,6 @@
           "separator_color": "#8a8a8a",
           "key_color": "#cdabff"
         },
-
         {
           "type": "json",
           "key": "\"database\"",
@@ -218,7 +193,6 @@
           "separator_color": "#8a8a8a",
           "key_color": "#cdabff"
         },
-
         {
           "type": "json",
           "key": "\"tools\"",
@@ -227,7 +201,6 @@
           "separator_color": "#8a8a8a",
           "key_color": "#cdabff"
         },
-
         {
           "type": "json",
           "key": "\"status\"",
@@ -236,10 +209,9 @@
           "separator_color": "#8a8a8a",
           "key_color": "#cdabff"
         },
-
         {
           "type": "json_bracket",
-          "text": "}",
+          "text": "{",
           "color": "#fa2b55"
         }
       ]
