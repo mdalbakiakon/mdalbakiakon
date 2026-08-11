@@ -1,0 +1,32 @@
+name: Regenerate terminal.svg
+
+on:
+  push:
+    paths:
+      - "terminal.config.json"
+      - "scripts/generate_terminal_svg.py"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Generate SVG from config
+        run: python3 scripts/generate_terminal_svg.py terminal.config.json assets/terminal.svg
+
+      - name: Commit updated SVG
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/terminal.svg
+          git diff --staged --quiet || git commit -m "chore: regenerate terminal.svg from terminal.config.json [skip ci]"
+          git push

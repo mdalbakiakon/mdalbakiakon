@@ -1,0 +1,382 @@
+{
+  "_readme": "Edit this file to change what the terminal shows and how it looks. Save + push, and the GitHub Action will regenerate assets/terminal.svg automatically. See README.md for a full field-by-field guide.",
+  "window_title": "mdalbakiakon@github:~",
+  "width": 760,
+  "badge_pad_x": 14,
+  "prompt_prefix": "mdalbakiakon@github:~$ ",
+  "colors": {
+    "background": "#0d0e12",
+    "header_bg": "#101217",
+    "border": "#22252b",
+    "dot_red": "#ff5f56",
+    "dot_yellow": "#ffbd2e",
+    "dot_green": "#27c93f",
+    "prompt_symbol": "#6814ba",
+    "command_text": "#c9c9c9",
+    "output_text": "#8a8a8a",
+    "timestamp": "#6b6f76",
+    "path_text": "#f78056",
+    "cursor": "#c9c9c9",
+    "badge_default": "#9ba0a6",
+    "link_color": "#f5c518",
+    "badges": {
+      "DONE": "#9acd32",
+      "STATS": "#7ec699",
+      "MODULE": "#f78056",
+      "INFO": "#00fff0",
+      "AWARD": "#e05561"
+    }
+  },
+  "font_family": "'JetBrains Mono', 'Fira Code', 'White Rabbit', ui-monospace, monospace",
+  "font_size": 14,
+  "timing": {
+    "typing_speed_ms": 150,
+    "enter_pause_ms": 1500,
+    "line_reveal_delay_ms": 40,
+    "command_gap_ms": 1500,
+    "image_delay_ms": 3500
+  },
+  "loop": false,
+  "show_idle_cursor_prompt": true,
+  "commands": [
+    {
+      "prompt": "git init --profile",
+      "output": [
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "text",
+          "text": "Initializing github profile ..."
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "badge",
+          "label": "DONE",
+          "text": "Environment ready  \u00b7  42ms",
+          "text_color": "#9acd32"
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "text",
+          "text": "Oh! Hi there. Welcome to my github profile."
+        }
+      ]
+    },
+    {
+      "prompt": "git identify --verbose",
+      "output": [
+        {
+          "type": "badge",
+          "label": "INFO",
+          "text": "Identification completed \u00b7  65ms",
+          "text_color": "#00fff0"
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "text",
+          "text": "generating 8bit pixel profile picture..."
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "image",
+          "src": "../assets/dp.png",
+          "width": 150,
+          "height": 150,
+          "circle": true
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "line",
+          "timestamp": "name",
+          "text": "Md. Al Baki Akon"
+        },
+        {
+          "type": "line",
+          "timestamp": "role",
+          "text": "Full Stack Software Engineer -- MERN Stack"
+        },
+        {
+          "type": "line",
+          "timestamp": "based",
+          "text": "Dhaka, Bangladesh"
+        },
+        {
+          "type": "line",
+          "timestamp": "portfolio",
+          "text": "https://mdalbakiakon.vercel.app/",
+          "link": "https://mdalbakiakon.vercel.app/"
+        },
+        {
+          "type": "line",
+          "timestamp": "email",
+          "text": "mdalbakiakon.dev@gmail.com",
+          "link": "mailto:mdalbakiakon.dev@gmail.com"
+        },
+        {
+          "type": "line",
+          "timestamp": "linkedin",
+          "text": "linkedin.com/in/md-al-baki-akon",
+          "link": "https://www.linkedin.com/in/md-al-baki-akon-352989362/"
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "text",
+          "text": "Full-stack engineer shipping production MERN/PERN apps,"
+        },
+        {
+          "type": "text",
+          "text": "and lead researcher on efficient, hallucination-resistant LLM decoding."
+        }
+      ]
+    },
+    {
+      "prompt": "git skills --by-category",
+      "output": [
+        {
+          "type": "badge",
+          "label": "MODULE",
+          "text": "~/skills/stack.json",
+          "text_color": "#f78056"
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "line",
+          "timestamp": "language",
+          "text": "Python, JavaScript"
+        },
+        {
+          "type": "line",
+          "timestamp": "frontend",
+          "text": "HTML, CSS, TailwindCSS, React.js"
+        },
+        {
+          "type": "line",
+          "timestamp": "backend",
+          "text": "Node.js, Express.js, RESTful APIs"
+        },
+        {
+          "type": "line",
+          "timestamp": "database",
+          "text": "PostgreSQL, MongoDB"
+        },
+        {
+          "type": "line",
+          "timestamp": "tools",
+          "text": "Git, Postman, GSAP"
+        }
+      ]
+    },
+    {
+      "prompt": "git projects --featured",
+      "output": [
+        {
+          "type": "badge",
+          "label": "MODULE",
+          "text": "~/projects/featured.md",
+          "text_color": "#f78056"
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "line",
+          "timestamp": "01",
+          "text": "NEXON.AI -- AI-powered utility app (PERN, OpenAI API, Clerk auth)"
+        },
+        {
+          "type": "line",
+          "timestamp": "02",
+          "text": "CODE STATION -- LMS platform (Django, React, JWT + RBAC)"
+        },
+        {
+          "type": "line",
+          "timestamp": "03",
+          "text": "NOTEBOOK+ -- offline-first note app (React, Local Storage API)"
+        }
+      ]
+    },
+    {
+      "prompt": "git research --list",
+      "output": [
+        {
+          "type": "badge",
+          "label": "MODULE",
+          "text": "~/research/A-RICD.md",
+          "text_color": "#f78056"
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "line",
+          "timestamp": "role",
+          "text": "Lead Researcher -- A-RICD, LLM Hallucination Mitigation"
+        },
+        {
+          "type": "line",
+          "timestamp": "method",
+          "text": "single-model, LoRA-adapter-based contrastive decoding"
+        },
+        {
+          "type": "line",
+          "timestamp": "result",
+          "text": "+38.7% relative MC1 accuracy on TruthfulQA (LLaMA-2-7B-Chat) vs. ICD baseline"
+        }
+      ]
+    },
+    {
+      "prompt": "git education --list",
+      "output": [
+        {
+          "type": "badge",
+          "label": "MODULE",
+          "text": "~/education/history.md",
+          "text_color": "#f78056"
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "line",
+          "timestamp": "2022-2026",
+          "text": "B.Sc. CSE -- Port City International University  (CGPA 3.61/4.0)"
+        },
+        {
+          "type": "line",
+          "timestamp": "2020",
+          "text": "HSC -- Govt. Hazi Mohammad Mohsin College  (GPA 5.0/5.0)"
+        },
+        {
+          "type": "line",
+          "timestamp": "2018",
+          "text": "SSC -- Chattogram Collegiate School  (GPA 5.0/5.0)"
+        }
+      ]
+    },
+    {
+      "prompt": "git achievements --list",
+      "output": [
+        {
+          "type": "badge",
+          "label": "MODULE",
+          "text": "~/achievements/log.md",
+          "text_color": "#f78056"
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "line",
+          "timestamp": "2025",
+          "text": "8th/132 -- Ostad Full-Stack Web Development Course"
+        },
+        {
+          "type": "line",
+          "timestamp": "2022",
+          "text": "ISSB Selected -- 89th BMA Long Course, Bangladesh Army"
+        },
+        {
+          "type": "line",
+          "timestamp": "2020",
+          "text": "Government Scholarship -- HSC Examination"
+        },
+        {
+          "type": "line",
+          "timestamp": "2016",
+          "text": "Best Male Host & Vocalist -- Bangladesh Betar FM 88.8"
+        },
+        {
+          "type": "line",
+          "timestamp": "2016",
+          "text": "Government Scholarship -- JSC Examination"
+        }
+      ]
+    },
+    {
+      "prompt": "git contact --export",
+      "output": [
+        {
+          "type": "badge",
+          "label": "STATS",
+          "text": "200 OK  \u00b7  synced",
+          "text_color": "#f78056"
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "text",
+          "text": "{"
+        },
+        {
+          "type": "text",
+          "text": "  \"portfolio\": \"mdalbakiakon.vercel.app\",",
+          "link": "https://mdalbakiakon.vercel.app/",
+          "link_text": "mdalbakiakon.vercel.app"
+        },
+        {
+          "type": "text",
+          "text": "  \"email\": \"mdalbakiakon.dev@gmail.com\",",
+          "link": "mailto:mdalbakiakon.dev@gmail.com",
+          "link_text": "mdalbakiakon.dev@gmail.com"
+        },
+        {
+          "type": "text",
+          "text": "  \"github\": \"github.com/mdalbakiakon\",",
+          "link": "https://github.com/mdalbakiakon",
+          "link_text": "github.com/mdalbakiakon"
+        },
+        {
+          "type": "text",
+          "text": "  \"linkedin\": \"linkedin.com/in/md-al-baki-akon\" ",
+          "link": "https://www.linkedin.com/in/md-al-baki-akon-352989362/",
+          "link_text": "linkedin.com/in/md-al-baki-akon"
+        },
+        {
+          "type": "text",
+          "text": "}"
+        },
+        {
+          "type": "text",
+          "text": " "
+        },
+        {
+          "type": "text",
+          "text": "Open to full-stack roles and research collaborations."
+        },
+        {
+          "type": "text",
+          "text": "Feel free to reach out anytime."
+        }
+      ]
+    }
+  ]
+}
