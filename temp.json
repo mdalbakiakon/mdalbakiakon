@@ -1,0 +1,35 @@
+{
+  "command": "node",
+  "console": [
+    "const response = await fetch(",
+    "  \"https://api.github.com/users/mdalbakiakon\"",
+    ")",
+    "undefined",
+    "const data = await response.json()",
+    "undefined",
+    "console.log(JSON.stringify(data, null, 2))"
+  ],
+  "api_delay": true,
+  "output": [
+    {
+      "type": "badge",
+      "label": "STATS",
+      "text": "200 OK · synced"
+    },
+    {
+      "type": "blank"
+    }
+  ],
+  "json": {
+    "name": "Md. Al Baki Akon",
+    "role": "Full Stack Software Engineer -- MERN Stack",
+    "location": "Dhaka, Bangladesh",
+    "frontend": "React.js, TailwindCSS, GSAP",
+    "backend": "Node.js, Express.js, RESTful APIs",
+    "database": "PostgreSQL, MongoDB",
+    "tools": "Git, Postman",
+    "research": "LLM Hallucination Mitigation",
+    "research_result": "+38.7% relative MC1 accuracy on TruthfulQA",
+    "education": "B.Sc. CSE -- Port City International University"
+  }
+}

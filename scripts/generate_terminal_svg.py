@@ -48,14 +48,6 @@ def load_config(path):
 
 
 def load_font_base64(font_path):
-    """
-    Loads the custom WOFF2 font and returns base64 data.
-
-    This embeds the font directly inside terminal.svg,
-    so the SVG does not depend on the browser finding the
-    font file separately.
-    """
-
     if not font_path:
         return None
 
@@ -153,10 +145,11 @@ def count_rows(
     rows = 0
 
     for cmd in commands:
-        # Prompt
+
+        # Shell command
         rows += 1
 
-        # Output
+        # Output / REPL lines
         rows += len(
             cmd.get(
                 "output",
@@ -164,7 +157,7 @@ def count_rows(
             )
         )
 
-        # Blank gap
+        # Blank gap after command
         rows += command_gap_lines
 
     if show_idle_cursor:
@@ -178,11 +171,15 @@ def count_rows(
 # ============================================================
 
 def build_svg(cfg, font_data=None):
+
     # ========================================================
     # COLORS
     # ========================================================
 
-    colors = cfg.get("colors", {})
+    colors = cfg.get(
+        "colors",
+        {},
+    )
 
     bg = colors.get(
         "background",
@@ -216,42 +213,27 @@ def build_svg(cfg, font_data=None):
 
     prompt_color = colors.get(
         "prompt_symbol",
-        "#7ec699",
+        "#6814ba",
     )
 
     command_color = colors.get(
         "command_text",
-        "#8a8a8a",
+        "#c9c9c9",
     )
 
     output_color = colors.get(
         "output_text",
-        "#c9c9c9",
+        "#8a8a8a",
     )
 
     timestamp_color = colors.get(
         "timestamp",
-        "#6b6f76",
-    )
-
-    path_color = colors.get(
-        "path_text",
-        "#6fb3d2",
+        "#4b4b50",
     )
 
     cursor_color = colors.get(
         "cursor",
         "#c9c9c9",
-    )
-
-    badge_default = colors.get(
-        "badge_default",
-        "#9ba0a6",
-    )
-
-    badges = colors.get(
-        "badges",
-        {},
     )
 
     line_number_color = colors.get(
@@ -264,15 +246,20 @@ def build_svg(cfg, font_data=None):
         border,
     )
 
-    link_color = (
-        colors.get("link_text")
-        or colors.get("link_color")
-        or "#6fb3d2"
+    # JSON/key-value colors
+    default_key_color = colors.get(
+        "key_color",
+        output_color,
     )
 
-    link_hover_color = colors.get(
-        "link_hover",
-        "#F72585",
+    default_colon_color = colors.get(
+        "colon_color",
+        output_color,
+    )
+
+    default_value_color = colors.get(
+        "value_color",
+        output_color,
     )
 
     # ========================================================
@@ -290,7 +277,8 @@ def build_svg(cfg, font_data=None):
     )
 
     char_width = (
-        font_size * CHAR_WIDTH_RATIO
+        font_size
+        * CHAR_WIDTH_RATIO
     )
 
     # ========================================================
@@ -334,7 +322,7 @@ def build_svg(cfg, font_data=None):
     char_dur = (
         timing.get(
             "typing_speed_ms",
-            45,
+            70,
         )
         / 1000.0
     )
@@ -342,7 +330,7 @@ def build_svg(cfg, font_data=None):
     enter_pause = (
         timing.get(
             "enter_pause_ms",
-            250,
+            900,
         )
         / 1000.0
     )
@@ -350,7 +338,7 @@ def build_svg(cfg, font_data=None):
     line_delay = (
         timing.get(
             "line_reveal_delay_ms",
-            350,
+            40,
         )
         / 1000.0
     )
@@ -358,21 +346,13 @@ def build_svg(cfg, font_data=None):
     command_gap = (
         timing.get(
             "command_gap_ms",
-            700,
-        )
-        / 1000.0
-    )
-
-    image_delay = (
-        timing.get(
-            "image_delay_ms",
-            3500,
+            1000,
         )
         / 1000.0
     )
 
     # ========================================================
-    # GENERAL CONFIG
+    # GENERAL
     # ========================================================
 
     window_title = cfg.get(
@@ -390,7 +370,7 @@ def build_svg(cfg, font_data=None):
         [],
     )
 
-    prompt_prefix = cfg.get(
+    shell_prompt = cfg.get(
         "prompt_prefix",
         "➜ ~ ",
     )
@@ -432,6 +412,7 @@ def build_svg(cfg, font_data=None):
     )
 
     if show_line_numbers:
+
         gutter_num_width = (
             digits
             * gutter_char_width
@@ -453,6 +434,7 @@ def build_svg(cfg, font_data=None):
         )
 
     else:
+
         gutter_width = 0
         num_right_x = 0
 
@@ -462,21 +444,7 @@ def build_svg(cfg, font_data=None):
         )
 
     # ========================================================
-    # DESIGN WIDTH
-    #
-    # IMPORTANT:
-    #
-    # This is the INTERNAL SVG coordinate width.
-    #
-    # The final SVG is rendered with:
-    #
-    #     width="100%"
-    #
-    # while preserving:
-    #
-    #     viewBox="0 0 DESIGN_WIDTH ..."
-    #
-    # This makes the entire terminal scale proportionally.
+    # WIDTH
     # ========================================================
 
     configured_width = cfg.get(
@@ -492,83 +460,23 @@ def build_svg(cfg, font_data=None):
     )
 
     # ========================================================
-    # TEXT / LINK HELPER
+    # FONT FAMILY
     # ========================================================
 
-    def make_content(
-        text,
-        base_color,
-        href=None,
-        link_match=None,
-        hover_color=None,
-    ):
-        if not href:
-            return (
-                f'<tspan fill="{base_color}">'
-                f'{esc(text)}'
-                f'</tspan>'
-            )
+    if font_data:
 
-        match = (
-            link_match
-            if link_match
-            else text
+        svg_font_family = (
+            '"WhiteRabbitCustom", '
+            + font_family
         )
 
-        hover = (
-            hover_color
-            or link_hover_color
-        )
+    else:
 
-        idx = (
-            text.find(match)
-            if match
-            else -1
-        )
+        svg_font_family = font_family
 
-        if idx == -1:
-            pre = ""
-            mid = text
-            post = ""
-
-        else:
-            pre = text[:idx]
-            mid = match
-            post = text[
-                idx + len(match):
-            ]
-
-        parts = []
-
-        if pre:
-            parts.append(
-                f'<tspan fill="{base_color}">'
-                f'{esc(pre)}'
-                f'</tspan>'
-            )
-
-        parts.append(
-            f'<a '
-            f'href="{esc(href)}" '
-            f'target="_blank" '
-            f'rel="noopener noreferrer">'
-            f'<tspan '
-            f'class="term-link" '
-            f'fill="{link_color}" '
-            f'style="--link-hover:{hover}">'
-            f'{esc(mid)}'
-            f'</tspan>'
-            f'</a>'
-        )
-
-        if post:
-            parts.append(
-                f'<tspan fill="{base_color}">'
-                f'{esc(post)}'
-                f'</tspan>'
-            )
-
-        return "".join(parts)
+    font_attr = (
+        f'font-family="{esc(svg_font_family)}"'
+    )
 
     # ========================================================
     # BODY
@@ -580,52 +488,276 @@ def build_svg(cfg, font_data=None):
 
     line_number = line_number_start
 
+    y = TOP_PAD
+
+    t = 0.3
+
     # ========================================================
     # GUTTER
     # ========================================================
 
     def draw_gutter(
         baseline_y,
-        reveal_time=None,
+        reveal_time,
     ):
         nonlocal line_number
 
-        if show_line_numbers:
+        if not show_line_numbers:
+            line_number += 1
+            return
 
-            if reveal_time is None:
-                reveal_time = 0
+        body_parts.append(
+            f'<text '
+            f'x="{num_right_x:.2f}" '
+            f'y="{baseline_y}" '
+            f'text-anchor="end" '
+            f'{font_attr} '
+            f'font-size="{gutter_font_size}" '
+            f'fill="{line_number_color}" '
+            f'opacity="0">'
+
+            f'{line_number}'
+
+            f'<animate '
+            f'attributeName="opacity" '
+            f'to="1" '
+            f'dur="0.03s" '
+            f'begin="{reveal_time:.3f}s" '
+            f'fill="freeze"/>'
+
+            f'</text>'
+        )
+
+        line_number += 1
+
+    # ========================================================
+    # ANIMATED TEXT
+    # ========================================================
+
+    def add_animated_text(
+        text,
+        x,
+        baseline_y,
+        start_time,
+        color,
+    ):
+        """
+        Types text character-by-character.
+        """
+
+        for i, ch in enumerate(text):
+
+            char_time = (
+                start_time
+                + i * char_dur
+            )
+
+            cx = (
+                x
+                + i * char_width
+            )
+
+            display_ch = (
+                ch
+                if ch != " "
+                else "\u00a0"
+            )
 
             body_parts.append(
                 f'<text '
-                f'x="{num_right_x:.2f}" '
+                f'x="{cx:.2f}" '
                 f'y="{baseline_y}" '
-                f'text-anchor="end" '
-                f'font-family="{esc(font_family)}" '
-                f'font-size="{gutter_font_size}" '
-                f'fill="{line_number_color}" '
+                f'{font_attr} '
+                f'font-size="{font_size}" '
+                f'fill="{color}" '
                 f'opacity="0">'
 
-                f'{line_number}'
+                f'{esc(display_ch)}'
 
                 f'<animate '
                 f'attributeName="opacity" '
                 f'to="1" '
-                f'dur="0.03s" '
-                f'begin="{reveal_time:.3f}s" '
+                f'dur="0.01s" '
+                f'begin="{char_time:.3f}s" '
                 f'fill="freeze"/>'
 
                 f'</text>'
             )
 
-        line_number += 1
+        return (
+            start_time
+            + len(text)
+            * char_dur
+        )
 
     # ========================================================
-    # INITIAL TIMELINE
+    # INSTANT TEXT
     # ========================================================
 
-    y = TOP_PAD
+    def add_instant_text(
+        text,
+        x,
+        baseline_y,
+        start_time,
+        color,
+    ):
+        """
+        Displays an entire text string at once.
+        """
 
-    t = 0.3
+        body_parts.append(
+            f'<text '
+            f'x="{x:.2f}" '
+            f'y="{baseline_y}" '
+            f'{font_attr} '
+            f'font-size="{font_size}" '
+            f'fill="{color}" '
+            f'opacity="0">'
+
+            f'{esc(text)}'
+
+            f'<animate '
+            f'attributeName="opacity" '
+            f'to="1" '
+            f'dur="0.01s" '
+            f'begin="{start_time:.3f}s" '
+            f'fill="freeze"/>'
+
+            f'</text>'
+        )
+
+    # ========================================================
+    # TIMESTAMP
+    # ========================================================
+
+    def get_timestamp(line):
+
+        value = line.get(
+            "timestamp"
+        )
+
+        if value is None:
+            return None
+
+        value = str(
+            value
+        ).strip()
+
+        if not value:
+            return None
+
+        if not value.startswith("["):
+            value = "[" + value
+
+        if not value.endswith("]"):
+            value = value + "]"
+
+        return value
+
+    # ========================================================
+    # KEY / VALUE OUTPUT
+    # ========================================================
+
+    def add_key_value_line(
+        line,
+        line_y,
+        start_time,
+    ):
+        """
+        Renders a JSON/key-value line instantly.
+
+        The key, colon, and value all appear at the
+        exact same time.
+        """
+
+        key = str(
+            line.get(
+                "key",
+                "",
+            )
+        )
+
+        value = str(
+            line.get(
+                "value",
+                "",
+            )
+        )
+
+        key_color = (
+            line.get(
+                "key_color"
+            )
+            or default_key_color
+        )
+
+        colon_color = (
+            line.get(
+                "colon_color"
+            )
+            or default_colon_color
+        )
+
+        value_color = (
+            line.get(
+                "value_color"
+            )
+            or default_value_color
+        )
+
+        key_x = left_pad
+
+        colon_x = (
+            key_x
+            + len(key)
+            * char_width
+        )
+
+        value_x = (
+            colon_x
+            + char_width
+        )
+
+        # Key
+        add_instant_text(
+            key,
+            key_x,
+            line_y,
+            start_time,
+            key_color,
+        )
+
+        # Colon
+        add_instant_text(
+            ":",
+            colon_x,
+            line_y,
+            start_time,
+            colon_color,
+        )
+
+        # Value
+        add_instant_text(
+            value,
+            value_x,
+            line_y,
+            start_time,
+            value_color,
+        )
+
+        total_width = (
+            len(key)
+            + 1
+            + 1
+            + len(value)
+        )
+
+        return (
+            start_time,
+            left_pad
+            + total_width
+            * char_width
+        )
 
     # ========================================================
     # COMMANDS
@@ -646,7 +778,7 @@ def build_svg(cfg, font_data=None):
         )
 
         # ====================================================
-        # PROMPT
+        # SHELL COMMAND
         # ====================================================
 
         prompt_baseline_y = y
@@ -664,29 +796,17 @@ def build_svg(cfg, font_data=None):
 
         prefix_x = left_pad
 
-        body_parts.append(
-            f'<text '
-            f'x="{prefix_x}" '
-            f'y="{prompt_baseline_y}" '
-            f'font-family="{esc(font_family)}" '
-            f'font-size="{font_size}" '
-            f'fill="{prompt_color}" '
-            f'opacity="0">'
-
-            f'{esc(prompt_prefix)}'
-
-            f'<animate '
-            f'attributeName="opacity" '
-            f'to="1" '
-            f'dur="0.01s" '
-            f'begin="{t:.3f}s" '
-            f'fill="freeze"/>'
-
-            f'</text>'
+        # Shell prompt
+        add_instant_text(
+            shell_prompt,
+            prefix_x,
+            prompt_baseline_y,
+            t,
+            prompt_color,
         )
 
         prefix_width = (
-            len(prompt_prefix)
+            len(shell_prompt)
             * char_width
         )
 
@@ -703,12 +823,18 @@ def build_svg(cfg, font_data=None):
             row_top_y,
         )
 
-        # ====================================================
-        # TYPE COMMAND
-        # ====================================================
+        # Type shell command
+        type_end_time = add_animated_text(
+            cmd_text,
+            cmd_start_x,
+            prompt_baseline_y,
+            command_start_time,
+            command_color,
+        )
 
-        for i, ch in enumerate(
-            cmd_text
+        # Cursor follows shell command
+        for i in range(
+            len(cmd_text) + 1
         ):
 
             char_time = (
@@ -716,49 +842,12 @@ def build_svg(cfg, font_data=None):
                 + i * char_dur
             )
 
-            cx = (
-                cmd_start_x
-                + i * char_width
-            )
-
-            display_ch = (
-                ch
-                if ch != " "
-                else "\u00a0"
-            )
-
-            body_parts.append(
-                f'<text '
-                f'x="{cx:.2f}" '
-                f'y="{prompt_baseline_y}" '
-                f'font-family="{esc(font_family)}" '
-                f'font-size="{font_size}" '
-                f'fill="{command_color}" '
-                f'opacity="0">'
-
-                f'{esc(display_ch)}'
-
-                f'<animate '
-                f'attributeName="opacity" '
-                f'to="1" '
-                f'dur="0.01s" '
-                f'begin="{char_time:.3f}s" '
-                f'fill="freeze"/>'
-
-                f'</text>'
-            )
-
             cursor.move_to(
                 char_time,
-                cx + char_width,
+                cmd_start_x
+                + i * char_width,
                 row_top_y,
             )
-
-        type_end_time = (
-            command_start_time
-            + len(cmd_text)
-            * char_dur
-        )
 
         t = (
             type_end_time
@@ -771,14 +860,87 @@ def build_svg(cfg, font_data=None):
         # OUTPUT
         # ====================================================
 
-        for line in output_lines:
+        output_index = 0
 
-            ltype = line.get(
+        while output_index < len(output_lines):
+
+            line = output_lines[output_index]
+
+            line_type = line.get(
                 "type",
                 "text",
             )
 
-            line_time = t
+            # =================================================
+            # JSON BLOCK
+            # =================================================
+
+            if line_type in (
+                "key_value",
+                "kv",
+                "json",
+            ):
+
+                # All consecutive JSON lines share exactly
+                # the same reveal time.
+                json_reveal_time = t
+
+                while output_index < len(output_lines):
+
+                    json_line = output_lines[output_index]
+
+                    json_type = json_line.get(
+                        "type",
+                        "text",
+                    )
+
+                    if json_type not in (
+                        "key_value",
+                        "kv",
+                        "json",
+                    ):
+                        break
+
+                    line_y = y
+
+                    row_top = (
+                        line_y
+                        - font_size
+                        + 3
+                    )
+
+                    draw_gutter(
+                        line_y,
+                        json_reveal_time,
+                    )
+
+                    _, cursor_x = add_key_value_line(
+                        json_line,
+                        line_y,
+                        json_reveal_time,
+                    )
+
+                    cursor.move_to(
+                        json_reveal_time,
+                        cursor_x,
+                        row_top,
+                    )
+
+                    y += line_height
+
+                    output_index += 1
+
+                # Pause AFTER the entire JSON block.
+                t = (
+                    json_reveal_time
+                    + enter_pause
+                )
+
+                continue
+
+            # =================================================
+            # NORMAL OUTPUT LINE
+            # =================================================
 
             line_y = y
 
@@ -790,408 +952,183 @@ def build_svg(cfg, font_data=None):
 
             draw_gutter(
                 line_y,
-                line_time,
+                t,
             )
 
             # =================================================
-            # BADGE
+            # REPL INPUT
             # =================================================
 
-            if ltype == "badge":
+            if line_type == "input":
 
-                label = str(
+                repl_prompt = str(
                     line.get(
-                        "label",
-                        "",
+                        "prompt",
+                        "> ",
                     )
                 )
 
-                text = str(
+                repl_text = str(
                     line.get(
                         "text",
                         "",
                     )
                 )
 
-                badge_bg = (
+                repl_prompt_color = (
                     line.get(
-                        "label_color"
+                        "prompt_color"
                     )
-                    or badges.get(
-                        label,
-                        badge_default,
-                    )
+                    or prompt_color
                 )
 
-                label_text_color = (
+                repl_text_color = (
                     line.get(
-                        "label_text_color"
+                        "color"
                     )
-                    or bg
+                    or command_color
                 )
 
-                desc_color = (
-                    line.get(
-                        "text_color"
-                    )
-                    or output_color
+                input_x = left_pad
+
+                # Prompt
+                add_instant_text(
+                    repl_prompt,
+                    input_x,
+                    line_y,
+                    t,
+                    repl_prompt_color,
                 )
 
-                pad_x = cfg.get(
-                    "badge_pad_x",
-                    8,
-                )
-
-                badge_h = (
-                    font_size + 8
-                )
-
-                badge_w = (
-                    len(label)
+                repl_prompt_width = (
+                    len(repl_prompt)
                     * char_width
-                    * 0.62
-                    + pad_x * 2
                 )
 
-                rect_y = (
-                    row_top - 2
+                repl_text_x = (
+                    input_x
+                    + repl_prompt_width
                 )
 
-                badge_cx = (
-                    left_pad
-                    + badge_w / 2
+                # Cursor
+                cursor.move_to(
+                    t,
+                    repl_text_x,
+                    row_top,
                 )
 
-                label_y = (
-                    rect_y
-                    + badge_h / 2
-                    + font_size * 0.35
-                )
-
-                desc_svg = (
-                    (
-                        f'<text '
-                        f'x="{left_pad + badge_w + 10:.2f}" '
-                        f'y="{line_y}" '
-                        f'font-family="{esc(font_family)}" '
-                        f'font-size="{font_size}" '
-                        f'fill="{desc_color}">'
-                        f'{esc(text)}'
-                        f'</text>'
+                # Type input
+                input_end_time = (
+                    add_animated_text(
+                        repl_text,
+                        repl_text_x,
+                        line_y,
+                        t,
+                        repl_text_color,
                     )
-                    if text
-                    else ""
                 )
 
-                body_parts.append(
-                    f'<g opacity="0">'
+                # Cursor follows input
+                for i in range(
+                    len(repl_text) + 1
+                ):
 
-                    f'<rect '
-                    f'x="{left_pad}" '
-                    f'y="{rect_y:.2f}" '
-                    f'width="{badge_w:.2f}" '
-                    f'height="{badge_h}" '
-                    f'rx="4" '
-                    f'fill="{badge_bg}"/>'
+                    char_time = (
+                        t
+                        + i * char_dur
+                    )
 
-                    f'<text '
-                    f'x="{badge_cx:.2f}" '
-                    f'y="{label_y:.2f}" '
-                    f'text-anchor="middle" '
-                    f'font-family="{esc(font_family)}" '
-                    f'font-size="{font_size}" '
-                    f'font-weight="700" '
-                    f'fill="{label_text_color}">'
-                    f'{esc(label)}'
-                    f'</text>'
+                    cursor.move_to(
+                        char_time,
+                        repl_text_x
+                        + i * char_width,
+                        row_top,
+                    )
 
-                    f'{desc_svg}'
-
-                    f'<animate '
-                    f'attributeName="opacity" '
-                    f'to="1" '
-                    f'dur="0.03s" '
-                    f'begin="{line_time:.3f}s" '
-                    f'fill="freeze"/>'
-
-                    f'</g>'
+                t = (
+                    input_end_time
+                    + enter_pause
                 )
-
-                t += line_delay
 
                 y += line_height
 
-                continue
-
-            # =================================================
-            # IMAGE
-            # =================================================
-
-            elif ltype == "image":
-
-                image_line_time = (
-                    t
-                    + image_delay
-                )
-
-                src = str(
-                    line.get(
-                        "src",
-                        "",
-                    )
-                )
-
-                img_w = line.get(
-                    "width",
-                    96,
-                )
-
-                img_h = line.get(
-                    "height",
-                    96,
-                )
-
-                radius = line.get(
-                    "radius",
-                    (
-                        img_w / 2
-                        if line.get("circle")
-                        else 10
-                    ),
-                )
-
-                img_x = left_pad
-
-                img_y = (
-                    row_top - 2
-                )
-
-                clip_id = (
-                    f"imgclip{len(body_parts)}"
-                )
-
-                body_parts.append(
-                    f'<clipPath '
-                    f'id="{clip_id}">'
-
-                    f'<rect '
-                    f'x="{img_x}" '
-                    f'y="{img_y:.2f}" '
-                    f'width="{img_w}" '
-                    f'height="{img_h}" '
-                    f'rx="{radius}"/>'
-
-                    f'</clipPath>'
-
-                    f'<g opacity="0">'
-
-                    f'<image '
-                    f'href="{esc(src)}" '
-                    f'xlink:href="{esc(src)}" '
-                    f'x="{img_x}" '
-                    f'y="{img_y:.2f}" '
-                    f'width="{img_w}" '
-                    f'height="{img_h}" '
-                    f'clip-path="url(#{clip_id})" '
-                    f'preserveAspectRatio="xMidYMid slice"/>'
-
-                    f'<rect '
-                    f'x="{img_x}" '
-                    f'y="{img_y:.2f}" '
-                    f'width="{img_w}" '
-                    f'height="{img_h}" '
-                    f'rx="{radius}" '
-                    f'fill="none" '
-                    f'stroke="{border}" '
-                    f'stroke-width="1"/>'
-
-                    f'<animate '
-                    f'attributeName="opacity" '
-                    f'to="1" '
-                    f'dur="0.3s" '
-                    f'begin="{image_line_time:.3f}s" '
-                    f'fill="freeze"/>'
-
-                    f'</g>'
-                )
-
-                t = (
-                    image_line_time
-                    + line_delay
-                )
-
-                y += (
-                    img_h
-                    + 10
-                )
+                output_index += 1
 
                 continue
 
             # =================================================
-            # PATH
+            # NORMAL TEXT OUTPUT
             # =================================================
 
-            elif ltype == "path":
+            text = str(
+                line.get(
+                    "text",
+                    "",
+                )
+            )
 
-                text = str(
-                    line.get(
-                        "text",
-                        "",
-                    )
+            color = (
+                line.get(
+                    "color"
+                )
+                or output_color
+            )
+
+            timestamp = get_timestamp(
+                line
+            )
+
+            # Timestamped output
+            if timestamp:
+
+                timestamp_width = (
+                    len(timestamp)
+                    * char_width
                 )
 
-                color = (
-                    line.get(
-                        "color"
-                    )
-                    or path_color
+                gap_width = (
+                    char_width
+                    * 0.75
                 )
 
-                content = (
-                    f'<tspan '
-                    f'fill="{color}">'
-                    f'{esc(text)}'
-                    f'</tspan>'
+                text_x = (
+                    left_pad
+                    + timestamp_width
+                    + gap_width
                 )
 
-            # =================================================
-            # LINE
-            # =================================================
-
-            elif ltype == "line":
-
-                ts = line.get(
-                    "timestamp"
+                add_instant_text(
+                    timestamp,
+                    left_pad,
+                    line_y,
+                    t,
+                    timestamp_color,
                 )
 
-                text = str(
-                    line.get(
-                        "text",
-                        "",
-                    )
-                )
-
-                text_color = (
-                    line.get(
-                        "text_color"
-                    )
-                    or output_color
-                )
-
-                href = (
-                    line.get("href")
-                    or line.get("link")
-                )
-
-                link_match = (
-                    line.get(
-                        "link_match"
-                    )
-                    or line.get(
-                        "link_text"
-                    )
-                )
-
-                text_content = make_content(
+                add_instant_text(
                     text,
-                    text_color,
-                    href,
-                    link_match,
-                    line.get(
-                        "hover_color"
-                    ),
+                    text_x,
+                    line_y,
+                    t,
+                    color,
                 )
 
-                if ts:
-
-                    content = (
-                        f'<tspan '
-                        f'fill="{timestamp_color}">'
-                        f'[{esc(ts)}]'
-                        f'</tspan>'
-
-                        f'<tspan '
-                        f'fill="{text_color}">'
-                        f'  '
-                        f'</tspan>'
-
-                        f'{text_content}'
-                    )
-
-                else:
-                    content = text_content
-
-            # =================================================
-            # PLAIN TEXT
-            # =================================================
-
+            # Normal text
             else:
 
-                text = str(
-                    line.get(
-                        "text",
-                        "",
-                    )
-                )
-
-                color = (
-                    line.get(
-                        "color"
-                    )
-                    or output_color
-                )
-
-                href = (
-                    line.get("href")
-                    or line.get("link")
-                )
-
-                link_match = (
-                    line.get(
-                        "link_match"
-                    )
-                    or line.get(
-                        "link_text"
-                    )
-                )
-
-                content = make_content(
+                add_instant_text(
                     text,
+                    left_pad,
+                    line_y,
+                    t,
                     color,
-                    href,
-                    link_match,
-                    line.get(
-                        "hover_color"
-                    ),
                 )
-
-            # =================================================
-            # NORMAL OUTPUT LINE
-            # =================================================
-
-            body_parts.append(
-                f'<text '
-                f'x="{left_pad}" '
-                f'y="{line_y}" '
-                f'font-family="{esc(font_family)}" '
-                f'font-size="{font_size}" '
-                f'opacity="0">'
-
-                f'{content}'
-
-                f'<animate '
-                f'attributeName="opacity" '
-                f'to="1" '
-                f'dur="0.03s" '
-                f'begin="{line_time:.3f}s" '
-                f'fill="freeze"/>'
-
-                f'</text>'
-            )
 
             t += line_delay
 
             y += line_height
+
+            output_index += 1
 
         # ====================================================
         # COMMAND GAP
@@ -1199,14 +1136,17 @@ def build_svg(cfg, font_data=None):
 
         t += command_gap
 
-        for _ in range(
+        y += (
             command_gap_lines
-        ):
-            line_number += 1
-            y += line_height
+            * line_height
+        )
+
+        line_number += (
+            command_gap_lines
+        )
 
     # ========================================================
-    # IDLE PROMPT
+    # IDLE SHELL PROMPT
     # ========================================================
 
     if show_idle_cursor:
@@ -1224,30 +1164,17 @@ def build_svg(cfg, font_data=None):
             t,
         )
 
-        body_parts.append(
-            f'<text '
-            f'x="{left_pad}" '
-            f'y="{idle_baseline_y}" '
-            f'font-family="{esc(font_family)}" '
-            f'font-size="{font_size}" '
-            f'fill="{prompt_color}" '
-            f'opacity="0">'
-
-            f'{esc(prompt_prefix)}'
-
-            f'<animate '
-            f'attributeName="opacity" '
-            f'to="1" '
-            f'dur="0.01s" '
-            f'begin="{t:.3f}s" '
-            f'fill="freeze"/>'
-
-            f'</text>'
+        add_instant_text(
+            shell_prompt,
+            left_pad,
+            idle_baseline_y,
+            t,
+            prompt_color,
         )
 
         idle_x = (
             left_pad
-            + len(prompt_prefix)
+            + len(shell_prompt)
             * char_width
         )
 
@@ -1264,7 +1191,8 @@ def build_svg(cfg, font_data=None):
     # ========================================================
 
     total_height = int(
-        y + BOTTOM_PAD
+        y
+        + BOTTOM_PAD
     )
 
     cursor_w = (
@@ -1310,7 +1238,7 @@ def build_svg(cfg, font_data=None):
         f'x="{design_width / 2:.1f}" '
         f'y="{HEADER_HEIGHT / 2 + 4:.1f}" '
         f'text-anchor="middle" '
-        f'font-family="{esc(font_family)}" '
+        f'{font_attr} '
         f'font-size="12" '
         f'fill="{command_color}">'
 
@@ -1338,7 +1266,7 @@ def build_svg(cfg, font_data=None):
         )
 
     # ========================================================
-    # EMBED CUSTOM FONT
+    # EMBED FONT
     # ========================================================
 
     font_face_css = ""
@@ -1355,37 +1283,15 @@ def build_svg(cfg, font_data=None):
         }}
         """
 
-        # Replace the configured font family with the embedded
-        # custom font as the first choice.
-        svg_font_family = (
-            '"WhiteRabbitCustom", '
-            + font_family
-        )
-
-    else:
-        svg_font_family = font_family
-
     # ========================================================
-    # FINAL SVG
-    #
-    # IMPORTANT:
-    #
-    # width="100%"     -> fills available browser width
-    #
-    # viewBox          -> preserves internal coordinates
-    #
-    # preserveAspectRatio
-    #                   -> scales terminal proportionally
-    #
-    # This is the part that fixes your current problem.
+    # SVG
     # ========================================================
 
     svg = f"""<svg
 width="100%"
 viewBox="0 0 {design_width} {total_height}"
 preserveAspectRatio="xMidYMin meet"
-xmlns="http://www.w3.org/2000/svg"
-xmlns:xlink="http://www.w3.org/1999/xlink">
+xmlns="http://www.w3.org/2000/svg">
 
 <defs>
 
@@ -1400,23 +1306,6 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <style>
         {font_face_css}
-
-        .terminal-text {{
-            font-family: {esc(svg_font_family)};
-        }}
-
-        .term-link {{
-            cursor: pointer;
-            text-decoration: underline;
-            text-decoration-color: currentColor;
-            text-decoration-thickness: 1px;
-            text-underline-offset: 2px;
-            transition: fill 0.15s ease;
-        }}
-
-        .term-link:hover {{
-            fill: var(--link-hover) !important;
-        }}
     </style>
 
 </defs>
@@ -1457,7 +1346,7 @@ xmlns:xlink="http://www.w3.org/1999/xlink">
     {cursor.to_svg(
         cursor_color,
         cursor_w,
-        cursor_h
+        cursor_h,
     )}
 
 </g>
@@ -1498,14 +1387,7 @@ def main():
     )
 
     # --------------------------------------------------------
-    # Find custom font
-    #
-    # Your current file:
-    #
-    # assets/wr.woff2
-    #
-    # This works whether the generator is executed from
-    # the repository root.
+    # Font
     # --------------------------------------------------------
 
     configured_font_path = cfg.get(
@@ -1516,8 +1398,11 @@ def main():
     if not os.path.isabs(
         configured_font_path
     ):
-        configured_font_path = os.path.abspath(
-            configured_font_path
+
+        configured_font_path = (
+            os.path.abspath(
+                configured_font_path
+            )
         )
 
     font_data = load_font_base64(
@@ -1534,11 +1419,13 @@ def main():
     )
 
     # --------------------------------------------------------
-    # Create output directory
+    # Output directory
     # --------------------------------------------------------
 
     os.makedirs(
-        os.path.dirname(output_path)
+        os.path.dirname(
+            output_path
+        )
         or ".",
         exist_ok=True,
     )
@@ -1552,6 +1439,7 @@ def main():
         "w",
         encoding="utf-8",
     ) as f:
+
         f.write(svg)
 
     print(
@@ -1560,15 +1448,22 @@ def main():
     )
 
     if font_data:
+
         print(
             f"Embedded custom font: "
             f"{configured_font_path}"
         )
+
     else:
+
         print(
             "Custom font was NOT embedded."
         )
 
+
+# ============================================================
+# ENTRY POINT
+# ============================================================
 
 if __name__ == "__main__":
     main()

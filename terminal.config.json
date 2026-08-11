@@ -1,396 +1,246 @@
 {
   "_readme": "Edit this file to change what the terminal shows and how it looks. Save + push, and the GitHub Action will regenerate assets/terminal.svg automatically.",
+
   "window_title": "mdalbakiakon@github:~",
+
   "width": 760,
-  "badge_pad_x": 14,
+
   "prompt_prefix": "mdalbakiakon@github:~$ ",
+
+  "font_file": "assets/wr.woff2",
+
   "colors": {
-    "background": "#0d0e12",
-    "header_bg": "#101217",
+    "background": "#2b282c",
+    "header_bg": "#2c2930",
     "border": "#22252b",
+
     "dot_red": "#ff5f56",
     "dot_yellow": "#ffbd2e",
     "dot_green": "#27c93f",
-    "prompt_symbol": "#6814ba",
+
+    "prompt_symbol": "#f5c517",
     "command_text": "#c9c9c9",
     "output_text": "#8a8a8a",
-    "timestamp": "#6b6f76",
-    "path_text": "#f78056",
+
+    "timestamp": "#514f56",
+
     "cursor": "#c9c9c9",
-    "badge_default": "#9ba0a6",
-    "link_color": "#f5c518",
-    "badges": {
-      "DONE": "#9acd32",
-      "STATS": "#7ec699",
-      "MODULE": "#f78056",
-      "INFO": "#00fff0",
-      "AWARD": "#e05561"
-    }
+
+    "line_number": "#514f56",
+    "gutter_divider": "#22252b",
+
+    "json_key": "#ffdbba",
+    "json_separator": "#8a8a8a",
+    "json_string": "#9acd32",
+    "json_number": "#f5c517",
+    "json_boolean": "#fa2b55",
+    "json_bracket": "#fa2b55"
   },
-  "font_file": "site/assets/wr.woff2",
-  "font_family": "'White Rabbit', 'JetBrains Mono', 'Fira Code', ui-monospace, monospace",
-  "font_size": 8,
+
+  "font_family": "'JetBrains Mono', 'Fira Code', 'White Rabbit', ui-monospace, monospace",
+
+  "font_size": 14,
+
+  "line_height": 20,
+
+  "content_left_pad": 20,
+
+  "command_gap_lines": 2,
+
+  "show_line_numbers": true,
+
+  "line_number_start": 0,
+
   "timing": {
-    "typing_speed_ms": 150,
-    "enter_pause_ms": 1500,
-    "line_reveal_delay_ms": 40,
-    "command_gap_ms": 1500,
-    "image_delay_ms": 3500
+    "typing_speed_ms": 200,
+    "enter_pause_ms": 900,
+    "line_reveal_delay_ms": 150,
+    "command_gap_ms": 1500
   },
-  "loop": false,
+
   "show_idle_cursor_prompt": true,
+
   "commands": [
     {
       "prompt": "git init --profile",
+
       "output": [
         {
           "type": "text",
-          "text": " "
+          "timestamp": "1/4",
+          "text": "Initializing github profile ...",
+          "color": "#8a8a8a"
         },
+
         {
           "type": "text",
-          "text": "Initializing github profile ..."
+          "timestamp": "2/4",
+          "text": "Fetching data...",
+          "color": "#8a8a8a"
         },
+
         {
           "type": "text",
-          "text": " "
+          "timestamp": "3/4",
+          "text": "Preparing developer environment...",
+          "color": "#8a8a8a"
         },
-        {
-          "type": "badge",
-          "label": "DONE",
-          "text": "Environment ready  ·  42ms",
-          "text_color": "#9acd32"
-        },
+
         {
           "type": "text",
-          "text": " "
+          "timestamp": "4/4",
+          "text": "Profile ready · 42ms",
+          "color": "#9acd32"
         },
+
         {
           "type": "text",
-          "text": "Oh! Hi there. Welcome to my github profile."
+          "text": "",
+          "color": "#9acd32"
+        },
+
+        {
+          "type": "text",
+          "text": "Oh! Hi there. Welcome to Baki's github profile.",
+          "color": "#9acd32"
         }
       ]
     },
+
     {
-      "prompt": "git identify --verbose",
+      "prompt": "node",
+
       "output": [
         {
           "type": "text",
-          "text": " "
+          "text": "Welcome to Node.js v24.13.0.",
+          "color": "#8a8a8a"
         },
+
         {
           "type": "text",
-          "text": "Identifying profile holder..."
+          "text": "Type \".help\" for more information.",
+          "color": "#8a8a8a"
         },
+
+        {
+          "type": "input",
+          "prompt": "> ",
+          "text": "const response = await fetch(\"https://api.github.com/users/mdalbakiakon\")",
+          "prompt_color": "#f5c517",
+          "color": "#c9c9c9"
+        },
+
         {
           "type": "text",
-          "text": " "
+          "text": "undefined",
+          "color": "#514f56"
         },
+
         {
-          "type": "badge",
-          "label": "INFO",
-          "text": "Identification completed · 65ms",
-          "text_color": "#00fff0"
+          "type": "input",
+          "prompt": "> ",
+          "text": "const data = await response.json()",
+          "prompt_color": "#f5c517",
+          "color": "#c9c9c9"
         },
+
         {
           "type": "text",
-          "text": " "
+          "text": "undefined",
+          "color": "#514f56"
         },
+
         {
-          "type": "text",
-          "text": "Generating 8bit pixel profile picture..."
+          "type": "input",
+          "prompt": "> ",
+          "text": "console.log(JSON.stringify(data, null, 2))",
+          "prompt_color": "#f5c517",
+          "color": "#c9c9c9"
         },
+
         {
-          "type": "text",
-          "text": " "
+          "type": "json_bracket",
+          "text": "{",
+          "color": "#fa2b55"
         },
+
         {
-          "type": "image",
-          "src": "assets/dp.png",
-          "width": 150,
-          "height": 150,
-          "circle": true
+          "type": "json",
+          "key": "\"name\"",
+          "value": "\"Md. Al Baki Akon\"",
+          "value_color": "#ffdbba",
+          "separator_color": "#8a8a8a",
+          "key_color": "#cdabff"
         },
+
         {
-          "type": "text",
-          "text": " "
+          "type": "json",
+          "key": "\"role\"",
+          "value": "\"Full Stack Software Engineer -- MERN Stack\"",
+          "value_color": "#ffdbba",
+          "separator_color": "#8a8a8a",
+          "key_color": "#cdabff"
         },
+
         {
-          "type": "line",
-          "timestamp": "name",
-          "text": "Md. Al Baki Akon"
+          "type": "json",
+          "key": "\"location\"",
+          "value": "\"Dhaka, Bangladesh\"",
+          "value_color": "#ffdbba",
+          "separator_color": "#8a8a8a",
+          "key_color": "#cdabff"
         },
+
         {
-          "type": "line",
-          "timestamp": "role",
-          "text": "Full Stack Software Engineer -- MERN Stack"
+          "type": "json",
+          "key": "\"frontend\"",
+          "value": "\"React.js, TailwindCSS, GSAP\"",
+          "value_color": "#ffdbba",
+          "separator_color": "#8a8a8a",
+          "key_color": "#cdabff"
         },
+
         {
-          "type": "line",
-          "timestamp": "based",
-          "text": "Dhaka, Bangladesh"
+          "type": "json",
+          "key": "\"backend\"",
+          "value": "\"Node.js, Express.js, RESTful APIs\"",
+          "value_color": "#ffdbba",
+          "separator_color": "#8a8a8a",
+          "key_color": "#cdabff"
         },
+
         {
-          "type": "line",
-          "timestamp": "portfolio",
-          "text": "mdalbakiakon.vercel.app",
-          "link": "https://mdalbakiakon.vercel.app/",
-          "link_text": "mdalbakiakon.vercel.app"
+          "type": "json",
+          "key": "\"database\"",
+          "value": "\"PostgreSQL, MongoDB\"",
+          "value_color": "#ffdbba",
+          "separator_color": "#8a8a8a",
+          "key_color": "#cdabff"
         },
+
         {
-          "type": "line",
-          "timestamp": "email",
-          "text": "mdalbakiakon.dev@gmail.com",
-          "link": "mailto:mdalbakiakon.dev@gmail.com",
-          "link_text": "mdalbakiakon.dev@gmail.com"
+          "type": "json",
+          "key": "\"tools\"",
+          "value": "\"Git, Postman\"",
+          "value_color": "#ffdbba",
+          "separator_color": "#8a8a8a",
+          "key_color": "#cdabff"
         },
+
         {
-          "type": "line",
-          "timestamp": "linkedin",
-          "text": "linkedin.com/in/md-al-baki-akon",
-          "link": "https://www.linkedin.com/in/md-al-baki-akon-352989362/",
-          "link_text": "linkedin.com/in/md-al-baki-akon"
+          "type": "json",
+          "key": "\"status\"",
+          "value": "\"Open to work\"",
+          "value_color": "#ffdbba",
+          "separator_color": "#8a8a8a",
+          "key_color": "#cdabff"
         },
+
         {
-          "type": "text",
-          "text": " "
-        },
-        {
-          "type": "text",
-          "text": "Full-stack engineer shipping production MERN/PERN apps,"
-        },
-        {
-          "type": "text",
-          "text": "and lead researcher on efficient, hallucination-resistant LLM decoding."
-        }
-      ]
-    },
-    {
-      "prompt": "git skills --by-category",
-      "output": [
-        {
-          "type": "badge",
-          "label": "MODULE",
-          "text": "~/skills/stack.json",
-          "text_color": "#f78056"
-        },
-        {
-          "type": "text",
-          "text": " "
-        },
-        {
-          "type": "line",
-          "timestamp": "language",
-          "text": "Python, JavaScript"
-        },
-        {
-          "type": "line",
-          "timestamp": "frontend",
-          "text": "HTML, CSS, TailwindCSS, React.js"
-        },
-        {
-          "type": "line",
-          "timestamp": "backend",
-          "text": "Node.js, Express.js, RESTful APIs"
-        },
-        {
-          "type": "line",
-          "timestamp": "database",
-          "text": "PostgreSQL, MongoDB"
-        },
-        {
-          "type": "line",
-          "timestamp": "tools",
-          "text": "Git, Postman, GSAP"
-        }
-      ]
-    },
-    {
-      "prompt": "git projects --featured",
-      "output": [
-        {
-          "type": "badge",
-          "label": "MODULE",
-          "text": "~/projects/featured.md",
-          "text_color": "#f78056"
-        },
-        {
-          "type": "text",
-          "text": " "
-        },
-        {
-          "type": "line",
-          "timestamp": "01",
-          "text": "NEXON.AI -- AI-powered utility app (PERN, OpenAI API, Clerk auth)"
-        },
-        {
-          "type": "line",
-          "timestamp": "02",
-          "text": "CODE STATION -- LMS platform (Django, React, JWT + RBAC)"
-        },
-        {
-          "type": "line",
-          "timestamp": "03",
-          "text": "NOTEBOOK+ -- offline-first note app (React, Local Storage API)"
-        }
-      ]
-    },
-    {
-      "prompt": "git research --list",
-      "output": [
-        {
-          "type": "badge",
-          "label": "MODULE",
-          "text": "~/research/A-RICD.md",
-          "text_color": "#f78056"
-        },
-        {
-          "type": "text",
-          "text": " "
-        },
-        {
-          "type": "line",
-          "timestamp": "role",
-          "text": "Lead Researcher -- A-RICD, LLM Hallucination Mitigation"
-        },
-        {
-          "type": "line",
-          "timestamp": "method",
-          "text": "single-model, LoRA-adapter-based contrastive decoding"
-        },
-        {
-          "type": "line",
-          "timestamp": "result",
-          "text": "+38.7% relative MC1 accuracy on TruthfulQA (LLaMA-2-7B-Chat) vs. ICD baseline"
-        }
-      ]
-    },
-    {
-      "prompt": "git education --list",
-      "output": [
-        {
-          "type": "badge",
-          "label": "MODULE",
-          "text": "~/education/history.md",
-          "text_color": "#f78056"
-        },
-        {
-          "type": "text",
-          "text": " "
-        },
-        {
-          "type": "line",
-          "timestamp": "2022-2026",
-          "text": "B.Sc. CSE -- Port City International University  (CGPA 3.61/4.0)"
-        },
-        {
-          "type": "line",
-          "timestamp": "2020",
-          "text": "HSC -- Govt. Hazi Mohammad Mohsin College  (GPA 5.0/5.0)"
-        },
-        {
-          "type": "line",
-          "timestamp": "2018",
-          "text": "SSC -- Chattogram Collegiate School  (GPA 5.0/5.0)"
-        }
-      ]
-    },
-    {
-      "prompt": "git achievements --list",
-      "output": [
-        {
-          "type": "badge",
-          "label": "MODULE",
-          "text": "~/achievements/log.md",
-          "text_color": "#f78056"
-        },
-        {
-          "type": "text",
-          "text": " "
-        },
-        {
-          "type": "line",
-          "timestamp": "2025",
-          "text": "8th/132 -- Ostad Full-Stack Web Development Course"
-        },
-        {
-          "type": "line",
-          "timestamp": "2022",
-          "text": "ISSB Selected -- 89th BMA Long Course, Bangladesh Army"
-        },
-        {
-          "type": "line",
-          "timestamp": "2020",
-          "text": "Government Scholarship -- HSC Examination"
-        },
-        {
-          "type": "line",
-          "timestamp": "2016",
-          "text": "Best Male Host & Vocalist -- Bangladesh Betar FM 88.8"
-        },
-        {
-          "type": "line",
-          "timestamp": "2016",
-          "text": "Government Scholarship -- JSC Examination"
-        }
-      ]
-    },
-    {
-      "prompt": "git contact --export",
-      "output": [
-        {
-          "type": "badge",
-          "label": "STATS",
-          "text": "200 OK  ·  synced",
-          "text_color": "#f78056"
-        },
-        {
-          "type": "text",
-          "text": " "
-        },
-        {
-          "type": "text",
-          "text": "{"
-        },
-        {
-          "type": "text",
-          "text": "  \"portfolio\": \"mdalbakiakon.vercel.app\",",
-          "link": "https://mdalbakiakon.vercel.app/",
-          "link_text": "mdalbakiakon.vercel.app"
-        },
-        {
-          "type": "text",
-          "text": "  \"email\": \"mdalbakiakon.dev@gmail.com\",",
-          "link": "mailto:mdalbakiakon.dev@gmail.com",
-          "link_text": "mdalbakiakon.dev@gmail.com"
-        },
-        {
-          "type": "text",
-          "text": "  \"github\": \"github.com/mdalbakiakon\",",
-          "link": "https://github.com/mdalbakiakon",
-          "link_text": "github.com/mdalbakiakon"
-        },
-        {
-          "type": "text",
-          "text": "  \"linkedin\": \"linkedin.com/in/md-al-baki-akon\"",
-          "link": "https://www.linkedin.com/in/md-al-baki-akon-352989362/",
-          "link_text": "linkedin.com/in/md-al-baki-akon"
-        },
-        {
-          "type": "text",
-          "text": "}"
-        },
-        {
-          "type": "text",
-          "text": " "
-        },
-        {
-          "type": "text",
-          "text": "Open to full-stack roles and research collaborations."
-        },
-        {
-          "type": "text",
-          "text": "Feel free to reach out anytime."
+          "type": "json_bracket",
+          "text": "}",
+          "color": "#fa2b55"
         }
       ]
     }
