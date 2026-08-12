@@ -8,7 +8,7 @@
 
   "colors": {
     "background": "#2b282c",
-    "header_bg": "#2c2930",
+    "header_bg": "#2b282c",
     "border": "#22252b",
 
     "dot_red": "#ff5f56",
@@ -88,7 +88,7 @@
         },
         {
           "type": "text",
-          "text": "Oh! Hi there. Welcome to Baki's github profile.",
+          "text": "Oh! Hi there. Welcome to Baki's Github profile.",
           "color": "#9acd32"
         }
       ]
@@ -165,6 +165,22 @@
           "type": "json",
           "key": "\"location\"",
           "value": "\"Dhaka, Bangladesh\"",
+          "value_color": "#ffdbba",
+          "separator_color": "#8a8a8a",
+          "key_color": "#cdabff"
+        },
+        {
+          "type": "json",
+          "key": "\"language\"",
+          "value": "\"Python, JavaScript, C++\"",
+          "value_color": "#ffdbba",
+          "separator_color": "#8a8a8a",
+          "key_color": "#cdabff"
+        },
+        {
+          "type": "json",
+          "key": "\"skills\"",
+          "value": "\"Full Stack Development, Frontend Engineering, UI/UX\"",
           "value_color": "#ffdbba",
           "separator_color": "#8a8a8a",
           "key_color": "#cdabff"

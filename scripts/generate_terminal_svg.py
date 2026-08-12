@@ -25,7 +25,7 @@ CHAR_WIDTH_RATIO = 0.6
 
 TOP_PAD = 56
 HEADER_HEIGHT = 40
-BOTTOM_PAD = 40
+BOTTOM_PAD = 20
 
 CURSOR_WIDTH_RATIO = 0.55
 CURSOR_HEIGHT_RATIO = 1.15
@@ -88,6 +88,7 @@ class Cursor:
         if not self.moves:
             return ""
 
+        t0 = self.moves[0][0]
         x0 = self.moves[0][1]
         y0 = self.moves[0][2]
 
@@ -118,12 +119,14 @@ class Cursor:
             f'width="{width:.2f}" '
             f'height="{height:.2f}" '
             f'rx="{radius}" '
-            f'fill="{color}">'
+            f'fill="{color}" '
+            f'opacity="0">'
             f"<animate "
             f'attributeName="opacity" '
             f'values="1;1;0;0;1" '
             f'keyTimes="0;0.45;0.5;0.95;1" '
             f'dur="1.05s" '
+            f'begin="{t0}s" '
             f'repeatCount="indefinite"/>'
             f"{x_animates}"
             f"{y_animates}"
@@ -140,10 +143,11 @@ def count_rows(
     commands,
     command_gap_lines,
     show_idle_cursor,
+    idle_gap_lines,
 ):
     rows = 0
 
-    for cmd in commands:
+    for i, cmd in enumerate(commands):
         rows += 1
         rows += len(
             cmd.get(
@@ -151,9 +155,16 @@ def count_rows(
                 [],
             )
         )
-        rows += command_gap_lines
+        # Only add the inter-command gap BETWEEN commands, not after
+        # the last one — the idle prompt gets its own fixed gap below.
+        if i < len(commands) - 1:
+            rows += command_gap_lines
 
     if show_idle_cursor:
+        # Small fixed gap before the idle prompt, so the blinking
+        # cursor doesn't sit flush against the last output line.
+        if commands:
+            rows += idle_gap_lines
         rows += 1
 
     return rows
@@ -285,6 +296,11 @@ def build_svg(cfg, font_data=None):
         2,
     )
 
+    idle_gap_lines = cfg.get(
+        "idle_gap_lines",
+        2,
+    )
+
     show_line_numbers = cfg.get(
         "show_line_numbers",
         True,
@@ -373,6 +389,7 @@ def build_svg(cfg, font_data=None):
         commands,
         command_gap_lines,
         show_idle_cursor,
+        idle_gap_lines,
     )
 
     max_line_number = line_number_start + max(
@@ -776,7 +793,7 @@ def build_svg(cfg, font_data=None):
     # COMMANDS
     # ========================================================
 
-    for cmd in commands:
+    for cmd_index, cmd in enumerate(commands):
 
         cmd_text = str(
             cmd.get(
@@ -1101,19 +1118,38 @@ def build_svg(cfg, font_data=None):
 
         # ====================================================
         # COMMAND GAP
+        #
+        # Only insert the gap BETWEEN commands. If this is the
+        # last command, skip it entirely so the idle prompt
+        # (or end of the SVG, if show_idle_cursor is off) sits
+        # right after the last output line with no trailing
+        # blank rows.
         # ====================================================
 
-        t += command_gap
+        if cmd_index < len(commands) - 1:
 
-        y += command_gap_lines * line_height
+            t += command_gap
 
-        line_number += command_gap_lines
+            y += command_gap_lines * line_height
+
+            line_number += command_gap_lines
 
     # ========================================================
     # IDLE PROMPT
     # ========================================================
 
     if show_idle_cursor:
+
+        # Fixed small gap before the idle prompt (only if there was
+        # at least one command above it — otherwise the idle prompt
+        # is the very first row and needs no lead-in gap).
+        if commands:
+
+            t += command_gap
+
+            y += idle_gap_lines * line_height
+
+            line_number += idle_gap_lines
 
         idle_baseline_y = y
 
@@ -1132,15 +1168,22 @@ def build_svg(cfg, font_data=None):
             prompt_color,
         )
 
-        idle_x = left_pad + len(shell_prompt) * char_width
+        idle_cursor_gap_chars = cfg.get(
+            "idle_cursor_gap_chars",
+            2,
+        )
+
+        idle_x = (
+            left_pad
+            + len(shell_prompt) * char_width
+            + idle_cursor_gap_chars * char_width
+        )
 
         cursor.move_to(
             t,
             idle_x,
             idle_row_top,
         )
-
-        y += line_height
 
     # ========================================================
     # DIMENSIONS
